@@ -55,51 +55,6 @@ void uart_error_handle(app_uart_evt_t * p_event)
 }
 
 
-
-#ifdef ENABLE_LOOPBACK_TEST
-/** @brief Function for setting the @ref ERROR_PIN high, and then enter an infinite loop.
- */
-static void show_error(void)
-{
-    
-    LEDS_ON(LEDS_MASK);
-    while(true)
-    {
-        // Do nothing.
-    }
-}
-
-
-/** @brief Function for testing UART loop back. 
- *  @details Transmitts one character at a time to check if the data received from the loopback is same as the transmitted data.
- *  @note  @ref TX_PIN_NUMBER must be connected to @ref RX_PIN_NUMBER)
- */
-static void uart_loopback_test()
-{
-    uint8_t * tx_data = (uint8_t *)("\n\rLOOPBACK_TEST\n\r");
-    uint8_t   rx_data;
-
-    // Start sending one byte and see if you get the same
-    for (uint32_t i = 0; i < MAX_TEST_DATA_BYTES; i++)
-    {
-        uint32_t err_code;
-        while(app_uart_put(tx_data[i]) != NRF_SUCCESS);
-
-        nrf_delay_ms(10);
-        err_code = app_uart_get(&rx_data);
-
-        if ((rx_data != tx_data[i]) || (err_code != NRF_SUCCESS))
-        {
-            show_error();
-        }
-    }
-    return;
-}
-
-
-#endif
-
-
 /**
  * @brief Function for main application entry.
  */
@@ -130,7 +85,7 @@ int main(void)
 
     APP_ERROR_CHECK(err_code);
 
-#ifndef ENABLE_LOOPBACK_TEST
+
     printf("\n\rStart: \n\r");
 
     while (true)
@@ -149,15 +104,7 @@ int main(void)
             }
         }
     }
-#else
 
-    // This part of the example is just for testing the loopback .
-    while (true)
-    {
-        uart_loopback_test();
-    }
-#endif
-}
 
 
 /** @} */
